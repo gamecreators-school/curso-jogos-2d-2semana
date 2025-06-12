@@ -1716,6 +1716,18 @@
         let velocidadeAtual = 1;
         let estaSynthesis = null;
         
+        // ===== CONFIGURAÇÃO DE ÁUDIOS =====
+        const audiosEstela = {
+            9: './aula9.mp3',
+            10: './aula10.mp3',
+            11: './aula11.mp3',
+            12: './aula12.mp3',
+            13: './aula13.mp3',
+            14: './aula14.mp3',
+            15: './aula15.mp3',
+            16: './aula16.mp3'
+        };
+        
         // ===== TEXTOS PARA SÍNTESE DE VOZ =====
         const textosEstela = {
             9: "Olá novamente! Agora que você já domina os conceitos de design de jogos, chegou a hora de dar vida às suas ideias através da arte! O Adobe Illustrator é como uma máquina mágica de criar arte. Imagine que você tem uma varinha que pode desenhar formas perfeitas, cores vibrantes e ilustrações que nunca perdem a qualidade, não importa o tamanho! A grande vantagem do Illustrator para jogos é que ele cria gráficos vetoriais - são como desenhos feitos de fórmulas matemáticas que mantêm a perfeição em qualquer tamanho. Perfeito para ícones, personagens e elementos de interface! Não se preocupe se não tiver o Illustrator - vou te ensinar alternativas gratuitas que funcionam de forma muito similar!",
@@ -1781,6 +1793,16 @@
             
             audio.addEventListener('canplay', function() {
                 console.log('✅ Áudio pronto para aula', numeroAula);
+                btnEstela.textContent = '▶️ Clique para tocar';
+                btnEstela.classList.remove('playing');
+                
+                document.querySelectorAll('.status-audio').forEach(status => {
+                    status.textContent = '▶️ Clique no botão para iniciar o áudio';
+                });
+            });
+            
+            audio.addEventListener('play', function() {
+                console.log('🎵 Áudio iniciado');
                 btnEstela.textContent = '🎵 Reproduzindo áudio...';
                 btnEstela.classList.add('playing');
                 
@@ -1802,7 +1824,7 @@
             });
             
             audio.addEventListener('error', function(e) {
-                console.log('❌ Erro no áudio, tentando síntese de voz:', e);
+                console.log('❌ Erro no áudio:', e);
                 console.log('🎤 Fallback: Usando síntese de voz');
                 audioAtual = null;
                 iniciarSinteseVoz(numeroAula, btnEstela);
@@ -1811,13 +1833,28 @@
             // Aplicar velocidade atual
             audio.playbackRate = velocidadeAtual;
             
-            audio.play().then(() => {
-                console.log('▶️ Reproduzindo áudio da aula', numeroAula);
-            }).catch(error => {
-                console.log('❌ Erro ao reproduzir, usando síntese:', error);
-                audioAtual = null;
-                iniciarSinteseVoz(numeroAula, btnEstela);
-            });
+            // MUDANÇA: Não tentar tocar automaticamente, aguardar interação do usuário
+            console.log('🎵 Áudio carregado e pronto para reprodução');
+            btnEstela.textContent = '▶️ Clique para tocar';
+            
+            // Adicionar event listener para tocar quando usuário clicar novamente
+            const originalOnClick = btnEstela.onclick;
+            btnEstela.onclick = function() {
+                if (audioAtual && audioAtual.readyState >= 2) {
+                    // Áudio já carregado, tocar
+                    audioAtual.play().then(() => {
+                        console.log('▶️ Reproduzindo áudio da aula', numeroAula);
+                    }).catch(error => {
+                        console.log('❌ Erro ao reproduzir:', error);
+                        console.log('🎤 Usando síntese de voz');
+                        audioAtual = null;
+                        iniciarSinteseVoz(numeroAula, btnEstela);
+                    });
+                } else {
+                    // Recarregar
+                    originalOnClick();
+                }
+            };
         }
         
         function iniciarSinteseVoz(numeroAula, btnEstela) {
@@ -3088,27 +3125,34 @@ ANTES DE ENTREGAR:
             console.log('🎨 Curso de Design Gráfico para Jogos carregado!');
             console.log('🤖 Estela pronta para explicar as aulas de arte!');
             console.log('📊 Aulas 9-16 disponíveis (Semana 3-4)');
-            console.log('🎵 Síntese de voz disponível para todas as aulas!');
+            console.log('🎵 Arquivos de áudio: aula9.mp3 até aula16.mp3');
+            console.log('🎤 Síntese de voz disponível como fallback!');
             console.log('📁 Sistema Google Drive integrado com templates específicos!');
             console.log('🎨 Foco em Adobe Illustrator + alternativas gratuitas!');
             
-            // Verificar suporte à síntese de voz
+            // Verificar suporte à síntese de voz (fallback)
             if ('speechSynthesis' in window) {
-                console.log('🎤 Síntese de voz disponível');
-                
-                // Carregar vozes disponíveis
-                window.speechSynthesis.addEventListener('voiceschanged', function() {
-                    const vozes = window.speechSynthesis.getVoices();
-                    console.log('🗣️ Vozes disponíveis:', vozes.length);
-                });
+                console.log('🎤 Síntese de voz disponível como backup');
             } else {
-                console.log('⚠️ Síntese de voz não disponível neste navegador');
+                console.log('⚠️ Síntese de voz não disponível - apenas arquivos MP3');
             }
             
-            console.log('🚀 Tudo pronto para a jornada artística! Clique em "Ouvir explicação da Estela"!');
-            console.log('🎛️ Use os controles para pausar, continuar e ajustar velocidade da Estela!');
+            console.log('🚀 Tudo pronto para a jornada artística!');
+            console.log('🎵 Prioridade: Arquivos MP3 → Fallback: Síntese de voz');
+            console.log('🎛️ Use os controles para pausar, continuar e ajustar velocidade!');
             console.log('📋 Siga as instruções do Google Drive para organizar sua arte!');
             console.log('🎨 Ao final desta semana, você terá arte profissional para seu jogo!');
+            console.log('');
+            console.log('📁 Estrutura esperada dos arquivos:');
+            console.log('├── index.html');
+            console.log('├── aula9.mp3');
+            console.log('├── aula10.mp3');
+            console.log('├── aula11.mp3');
+            console.log('├── aula12.mp3');
+            console.log('├── aula13.mp3');
+            console.log('├── aula14.mp3');
+            console.log('├── aula15.mp3');
+            console.log('└── aula16.mp3');
         });
         
         // ===== LIMPEZA AO SAIR DA PÁGINA =====
